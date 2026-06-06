@@ -1,0 +1,24 @@
+name: Deploy to OVH
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy via rsync over SSH
+        uses: burnett01/rsync-deployments@7.0.1
+        with:
+          switches: -avz --delete --exclude='.git*' --exclude='.github'
+          path: ./
+          remote_path: /var/www/vhosts/infoplay.com/verospetcare.infoplay.com/
+          remote_host: ${{ secrets.OVH_SSH_HOST }}
+          remote_port: ${{ secrets.OVH_SSH_PORT }}
+          remote_user: ${{ secrets.OVH_SSH_USER }}
+          remote_password: ${{ secrets.OVH_SSH_PASSWORD }}
